@@ -10,6 +10,21 @@ function cwrc_find_replace_menu_alter(&$items) {
 }
 
 /**
+ * Implements hook_page_alter().
+ *
+ * Alters the messages output by the islandora_xquery module.
+ */
+function cwrc_find_replace_page_alter(&$page) {
+  $menu = menu_get_item();
+
+  if ($menu['path'] == 'islandora/xquery/preview/%') {
+    // TODO: Find a better way...
+    drupal_get_messages();
+    drupal_set_message(t('Objects listed below have been locked for editing.'));
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Alters the initial XQuery form to be a little more user friendly.
@@ -91,7 +106,6 @@ function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$fo
 
   // Add our validation handler.
   $form['#validate'][] = 'cwrc_find_replace_validate_dsids';
-  // d($form);
 }
 
 /**
