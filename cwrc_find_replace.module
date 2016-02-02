@@ -94,6 +94,7 @@ function cwrc_find_replace_validate_dsids($form, &$form_state) {
   if (empty($values['xquery_controls']['dsids']) && empty($values['xquery_controls']['dsids_extra'])) {
     form_set_error('dsids_extra', t('You must select at least one datastream to run the query against.'));
   }
-  $dsids_extra = implode(',', $values['xquery_controls']['dsids_extra']);
-  form_set_value($form['xquery_controls']['dsids'], $dsids_extra . ',' . $values['xquery_controls']['dsids'], $form_state);
+  $dsids_extra = array_filter($values['xquery_controls']['dsids_extra']);
+  $dsids = trim(implode(',', $dsids_extra) . ',' . $values['xquery_controls']['dsids'], ",");
+  form_set_value($form['xquery_controls']['dsids'], $dsids, $form_state);
 }
