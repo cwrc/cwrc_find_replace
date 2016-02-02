@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Implements hook_menu_alter().
+ *
+ * Alters the title of the query preview page for clarity.
+ */
+function cwrc_find_replace_menu_alter(&$items) {
+  $items['islandora/xquery/preview/%']['#title'] = 'Step 3: Review changes';
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Alters the initial XQuery form to be a little more user friendly.
