@@ -10,18 +10,40 @@ function cwrc_find_replace_menu_alter(&$items) {
 }
 
 /**
- * Implements hook_page_alter().
- *
- * Alters the messages output by the islandora_xquery module.
+ * Implements hook_batch_alter().
  */
-function cwrc_find_replace_page_alter(&$page) {
-  $menu = menu_get_item();
-
-  if ($menu['path'] == 'islandora/xquery/preview/%') {
-    // TODO: Find a better way...
-    drupal_get_messages();
-    drupal_set_message(t('Objects listed below have been locked for editing.'));
+function cwrc_find_replace_batch_alter(&$batch) {
+  // Really the only entry point here...
+  if ($batch['sets'][0]['finished'] == 'islandora_xquery_run_query_batch_finished') {
+    $batch['sets'][0]['title'] = t('Running find and replace');
+    $batch['sets'][0]['finished'] = 'cwrc_find_replace_run_query_batch_finished';
+  } else if ($batch['sets'][0]['finished'] == 'islandora_xquery_apply_query_batch_finished') {
+    $batch['sets'][0]['title'] = t('Applying find and replace');
+    $batch['sets'][0]['finished'] = 'cwrc_find_replace_apply_query_batch_finished';
   }
+  // dd($batch);
+}
+
+/**
+ * Batch finished callback.
+ */
+function cwrc_find_replace_run_query_batch_finished($success, $results, $operations) {
+  // Clear messages and set our own message.
+  drupal_get_messages();
+  drupal_set_message(t('Objects listed below have been locked for editing.'));
+
+  // Call the original callback now.
+  islandora_xquery_run_query_batch_finished($success, $results, $operations);
+}
+
+/**
+ * Batch finished callback.
+ */
+function cwrc_find_replace_apply_query_batch_finished ($success, $results, $operations) {
+  drupal_set_message(t('Objects were modified successfully and locks have been released.'));
+
+  // Call the original callback now.
+  islandora_xquery_apply_query_batch_finished($success, $results, $operations);
 }
 
 /**
