@@ -21,7 +21,6 @@ function cwrc_find_replace_batch_alter(&$batch) {
     $batch['sets'][0]['title'] = t('Applying find and replace');
     $batch['sets'][0]['finished'] = 'cwrc_find_replace_apply_query_batch_finished';
   }
-  // dd($batch);
 }
 
 /**
@@ -52,6 +51,9 @@ function cwrc_find_replace_apply_query_batch_finished ($success, $results, $oper
  * Alters the initial XQuery form to be a little more user friendly.
  */
 function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$form_state) {
+  // Clobber the page title.
+  drupal_set_title(t('Find and Replace'));
+
   // Label and help text updates.
   $form['step_one'] = array(
     '#prefix' => '<h2>',
