@@ -98,8 +98,8 @@ function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$fo
     && !isset($form['xquery_controls']['xquery_inputs']['query'])) {
     $form['xquery_controls']['xquery_inputs']['#markup'] = t('No parameters.');
   }
-  $form['xquery_controls']['submit_all']['#access'] = false;
-  $form['xquery_controls']['submit_selected']['#value'] = t('Step 3: Review changes');
+  $form['xquery_controls']['submit_all']['#value'] = t('Step 3: Review changes from all objects in search result');
+  $form['xquery_controls']['submit_selected']['#value'] = t('Step 3: Review changes from selected objects');
 
   // Alter the DSID field to have additional helper checkboxes.
   $dsids = variable_get('cwrc_find_replace_dsid_checkboxes', array(
