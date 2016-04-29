@@ -14,10 +14,10 @@ function cwrc_find_replace_menu_alter(&$items) {
  */
 function cwrc_find_replace_batch_alter(&$batch) {
   // Really the only entry point here...
-  if ($batch['sets'][0]['finished'] == 'islandora_xquery_run_query_batch_finished') {
+  if (isset($batch['sets'][0]['finished']) && $batch['sets'][0]['finished'] == 'islandora_xquery_run_query_batch_finished') {
     $batch['sets'][0]['title'] = t('Running find and replace');
     $batch['sets'][0]['finished'] = 'cwrc_find_replace_run_query_batch_finished';
-  } else if ($batch['sets'][0]['finished'] == 'islandora_xquery_apply_query_batch_finished') {
+  } else if (isset($batch['sets'][0]['finished']) && $batch['sets'][0]['finished'] == 'islandora_xquery_apply_query_batch_finished') {
     $batch['sets'][0]['title'] = t('Applying find and replace');
     $batch['sets'][0]['finished'] = 'cwrc_find_replace_apply_query_batch_finished';
   }
