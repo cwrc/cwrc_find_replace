@@ -1,11 +1,17 @@
 <?php
 
 /**
+ * @file
+ * Hooks and helper functions for the cwrc_find_replace module.
+ */
+
+/* Hooks. */
+
+/**
  * Implements hook_menu_alter().
- *
- * Alters the title of the query preview page for clarity.
  */
 function cwrc_find_replace_menu_alter(&$items) {
+  // Alters the title of the query preview page for clarity.
   $items['islandora/xquery/preview/%']['#title'] = 'Step 3: Review changes';
 }
 
@@ -17,41 +23,19 @@ function cwrc_find_replace_batch_alter(&$batch) {
   if (isset($batch['sets'][0]['finished']) && $batch['sets'][0]['finished'] == 'islandora_xquery_run_query_batch_finished') {
     $batch['sets'][0]['title'] = t('Running find and replace');
     $batch['sets'][0]['finished'] = 'cwrc_find_replace_run_query_batch_finished';
-  } else if (isset($batch['sets'][0]['finished']) && $batch['sets'][0]['finished'] == 'islandora_xquery_apply_query_batch_finished') {
+  }
+  elseif (isset($batch['sets'][0]['finished']) && $batch['sets'][0]['finished'] == 'islandora_xquery_apply_query_batch_finished') {
     $batch['sets'][0]['title'] = t('Applying find and replace');
     $batch['sets'][0]['finished'] = 'cwrc_find_replace_apply_query_batch_finished';
   }
 }
 
 /**
- * Batch finished callback.
- */
-function cwrc_find_replace_run_query_batch_finished($success, $results, $operations) {
-  // Clear messages and set our own message.
-  drupal_get_messages();
-  drupal_set_message(t('Objects listed below have been locked for editing.'));
-
-  // Call the original callback now.
-  islandora_xquery_run_query_batch_finished($success, $results, $operations);
-}
-
-/**
- * Batch finished callback.
- */
-function cwrc_find_replace_apply_query_batch_finished ($success, $results, $operations) {
-  drupal_set_message(t('Objects were modified successfully and locks have been released.'));
-
-  // Call the original callback now.
-  islandora_xquery_apply_query_batch_finished($success, $results, $operations);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Alters the initial XQuery form to be a little more user friendly.
+ * Implements hook_form_FORM_ID_alter() for islandora_xquery_results().
  */
 function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$form_state) {
-
+  // Alters the initial XQuery form to be a little more user friendly.
+  //
   // Label and help text updates.
   $form['step_one'] = array(
     '#prefix' => '<h2>',
@@ -76,7 +60,7 @@ function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$fo
     '#prefix' => '<h3>',
     '#markup' => t('Query options'),
     '#suffix' => '</h3>',
-    '#weight' => -96
+    '#weight' => -96,
   );
   $form['xquery_controls']['xquery']['#title'] = t('Find and replace query');
   $form['xquery_controls']['xquery']['#description'] = t('Select the query you would like to run against the selected objects.');
@@ -124,17 +108,46 @@ function cwrc_find_replace_form_islandora_xquery_results_form_alter(&$form, &$fo
   $form['xquery_controls']['dsids']['#title'] = t('Additional datastream IDs');
   $form['xquery_controls']['dsids']['#description'] = t('Enter a comma-seperated list of additional DSIDs to run the query against (advanced).');
   $form['xquery_controls']['dsids']['#weight'] = -98;
-  $form['xquery_controls']['dsids']['#required'] = false;
+  $form['xquery_controls']['dsids']['#required'] = FALSE;
 
   // Add our validation handler.
   $form['#validate'][] = 'cwrc_find_replace_validate_dsids';
 }
 
+/* Batch API callbacks. */
+
 /**
- * Validation callback for that ensures some DSIDs were entered and sets the
- * right field for the islandora_xquery module.
+ * Batch finished callback.
+ */
+function cwrc_find_replace_run_query_batch_finished($success, $results, $operations) {
+  // Clear messages and set our own message.
+  drupal_get_messages();
+  drupal_set_message(t('Objects listed below have been locked for editing.'));
+
+  // Call the original callback now.
+  islandora_xquery_run_query_batch_finished($success, $results, $operations);
+}
+
+/**
+ * Batch finished callback.
+ */
+function cwrc_find_replace_apply_query_batch_finished($success, $results, $operations) {
+  drupal_set_message(t('Objects were modified successfully and locks have been released.'));
+
+  // Call the original callback now.
+  islandora_xquery_apply_query_batch_finished($success, $results, $operations);
+}
+
+/* Form handlers. */
+
+/**
+ * Form validation handler for islandora_xquery_results().
+ *
+ * @see cwrc_find_replace_form_islandora_xquery_results_form_alter()
  */
 function cwrc_find_replace_validate_dsids($form, &$form_state) {
+  // Ensure some DSIDs were entered and sets the right field for the
+  // islandora_xquery module.
   $values =& $form_state['values'];
   if (empty($values['xquery_controls']['dsids']) && empty($values['xquery_controls']['dsids_extra'])) {
     form_set_error('dsids_extra', t('You must select at least one datastream to run the query against.'));
